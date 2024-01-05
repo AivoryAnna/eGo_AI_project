@@ -5,7 +5,7 @@ const app = express();
 app.use(express.json());
 const PORT = 3000;
 
-const OPENAI_API_KEY = '';
+const OPENAI_API_KEY = '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';
 
 
 app.post('/chat', async (req, res) => {
