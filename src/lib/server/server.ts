@@ -2,44 +2,57 @@ import express from 'express';
 import fetch from 'node-fetch';
 import cors from 'cors';
 
+
 const corsOptions = {
-    origin: 'http://localhost:5173', 
-    optionsSuccessStatus: 200 
-  };
+    origin: 'http://localhost:5173',
+    optionsSuccessStatus: 200
+};
 
 const app = express();
 app.use(express.json());
 app.use(cors(corsOptions));
 const PORT = 3000;
 
-const OPENAI_API_KEY = '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';
+const OPENAI_API_KEY = 'key';
 
 app.get('/', (req, res) => {
-    res.send('Welcome to my chat app');
+    res.send('Chat endpoint is working'); 
 });
 
 app.post('/chat', async (req, res) => {
-    const userMessage = req.body.message; 
+    console.log("Received prompt:", req.body.message);
+    const userPrompt = req.body.message;
 
     try {
-        const prompt = `Write a short story about a person named ${userMessage}.`;
-        
-        const response = await fetch('https://api.openai.com/v1/engines/gpt-4/completions', {
+        console.log("POST request received on /chat");
+        const response = await fetch('https://api.openai.com/v1/chat/completions', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${OPENAI_API_KEY}`
             },
             body: JSON.stringify({
-                prompt: prompt,
-                max_tokens: 150 
+                model: "gpt-3.5-turbo",
+                temperature: 2,
+                max_tokens: 300,
+                messages: [
+                    {
+                        role: "system",
+                        content: "You are a wise teacher helping with creating lessons plans."
+                    },
+                    {
+                        role: "user",
+                        content: userPrompt
+                    }
+                ]
             })
         });
 
         const data = await response.json();
-        console.log(data);
+
         if (data.choices && data.choices.length > 0) {
-            res.send({ reply: data.choices[0].text.trim() });
+            const replyMessage = data.choices[0].message.content.trim();
+            res.send({ reply: replyMessage });
         } else {
             res.send({ reply: "Sorry, I couldn't process your request." });
         }
@@ -54,5 +67,3 @@ app.post('/chat', async (req, res) => {
 app.listen(PORT, () => {
     console.log(`Server is running at http://localhost:${PORT}`);
 });
-
-
