@@ -33,8 +33,8 @@ app.post('/chat', async (req, res) => {
             },
             body: JSON.stringify({
                 model: "gpt-3.5-turbo",
-                temperature: 2,
-                max_tokens: 300,
+                temperature: 0.7,
+                max_tokens: 2000,
                 messages: [
                     {
                         role: "system",
@@ -47,11 +47,11 @@ app.post('/chat', async (req, res) => {
                 ]
             })
         });
-
         const data = await response.json();
 
         if (data.choices && data.choices.length > 0) {
             const replyMessage = data.choices[0].message.content.trim();
+            console.log("Reply from AI:", replyMessage);
             res.send({ reply: replyMessage });
         } else {
             res.send({ reply: "Sorry, I couldn't process your request." });
