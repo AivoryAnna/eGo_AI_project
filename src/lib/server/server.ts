@@ -13,7 +13,7 @@ app.use(express.json());
 app.use(cors(corsOptions));
 const PORT = 3000;
 
-const OPENAI_API_KEY = 'key';
+const OPENAI_API_KEY = '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';
 
 app.get('/', (req, res) => {
     res.send('Chat endpoint is working'); 

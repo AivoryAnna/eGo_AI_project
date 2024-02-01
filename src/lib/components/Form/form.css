@@ -1,0 +1,81 @@
+.storybook-form {
+    font-family: 'Nunito Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    flex-direction: column;
+    padding: 5% 10%;
+    color: #333;
+}
+
+.storybook-form .lessonOption {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    flex-direction: row;
+    padding: 2% 0% 2% 4%;
+    width: 100%;
+    font-weight: 300;
+    color: #333;
+}
+
+.storybook-form .lessonOption label {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: transparent;
+    margin-right: 10%;
+}
+
+.storybook-form .lessonOption label input {
+    margin-left: 20%;
+}
+
+.storybook-form .lessonAge {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    flex-direction: row;
+    padding: 2%;
+    width: 100%;
+    font-weight: 300;
+}
+
+.storybook-form .lessonAge label {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 0%;
+    max-width: 30%;
+}
+
+.storybook-form .lessonAge label input {
+    margin: 0% 10%;
+}
+
+.storybook-form .lessonPurpose {
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    flex-direction: column;
+    padding: 0% 2%;
+    width: 100%;
+    font-weight: 300;
+}
+
+.storybook-form .lessonPurpose .inputPurpose {
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    flex-direction: row;
+    padding: 0%;
+    width: 100%;
+}
+
+.storybook-form .lessonPurpose .inputPurpose  label {
+    width: 80%;
+}
+
+.storybook-form .lessonPurpose .inputPurpose  label input {
+    margin: 0% 3%;
+}

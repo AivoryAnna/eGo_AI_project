@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Button from '../Button/Button.svelte';
 	import Input from '../Input/Input.svelte';
+	import './form.css';
 
 	let name = '';
 	let lowAge = '';
@@ -42,11 +43,7 @@
 						? 'Number of kids: describe number of kids'
 						: 'It/s an individual lesson.'
 				}. 
-        ${
-					studentFactors != null
-						? 'Describe every student factors'
-						: 'Do not write any'
-				},
+        ${studentFactors != null ? 'Describe every student factors' : 'Do not write any'},
         Lesson plan:
         Describe a detailed lesson plan with the inclusion of the tasks you suggested, suitable for this purpose and age of students. Where a lecture format is required from the educator, please write out the educator's speech in full.  
         When constructing tasks and the lesson, take into account students factors (if they are exist) and  all provided data, such as:
@@ -70,43 +67,60 @@
 	};
 </script>
 
-<form on:submit|preventDefault={handleSubmit}>
+<form on:submit|preventDefault={handleSubmit} class="storybook-form">
 	<Input
-		size="small"
+		size="large"
 		type="text"
 		bind:value={subject}
 		placeholder="Enter subject (e.g., Math, Art)"
+		primary={true}
 	/>
-	<label>
-		<input type="radio" bind:group={lessonType} value="Introduction" />
-		Introduction
-	</label>
-	<label>
-		<input type="radio" bind:group={lessonType} value="Repetition" />
-		Repetition
-	</label>
-	<label>
-		<input type="radio" bind:group={lessonType} value="Reinforcement" />
-		Reinforcement
-	</label>
-	<Input size="small" type="text" bind:value={purpose} placeholder={lessonPurposePlaceholder} />
-	<div>
-		<label for="lowAge">Age from:</label>
-		<input type="number" bind:value={lowAge} min="0" />
 
-		<label for="upperAge">to:</label>
-		<input  type="number" bind:value={upperAge} min="0" />
+	<div class="lessonOption">
+		<label for="option1">
+			Introduction
+			<Input type="radio" id="option1" bind:group={lessonType} value="Introduction" />
+		</label>
+		<label for="option2"
+			>Repetition
+			<Input type="radio" id="option2" bind:group={lessonType} value="Repetition" />
+		</label>
+		<label for="option3"
+			>Reinforcement
+			<Input type="radio" id="option3" bind:group={lessonType} value="Reinforcement" />
+		</label>
 	</div>
-	<div>
-		<p>Should AI describe the purpose in more detail?</p>
-		<label>
-			<input type="radio" bind:group={purposeDescription} value="Yes" />
-			Yes
+
+	<Input
+		size="large"
+		type="text"
+		bind:value={purpose}
+		placeholder={lessonPurposePlaceholder}
+		primary={true}
+	/>
+	<div class="lessonAge">
+		<label for="lowAge"
+			>Age from:
+			<Input type="number" bind:value={lowAge} min="0" primary={true} />
 		</label>
-		<label>
-			<input type="radio" bind:group={purposeDescription} value="No" />
-			No
+
+		<label for="upperAge">
+			to:
+			<Input type="number" bind:value={upperAge} min="0" primary={true} />
 		</label>
+	</div>
+	<div class="lessonPurpose">
+		<p>Should we describe the purpose in more detail?</p>
+		<div class='inputPurpose'>
+			<label for="purpose1">
+				Yes, I need more details
+				<Input type="radio" id='purpose1' bind:group={purposeDescription} value="Yes" />
+			</label>
+			<label for="purpose2">
+				No
+				<Input type="radio" id='purpose2' bind:group={purposeDescription} value="No" />
+			</label>
+		</div>
 	</div>
 	<div>
 		<p>Should AI describe the lesson objectives?</p>
@@ -124,10 +138,11 @@
 		<input type="number" bind:value={amount} min="1" />
 	</div>
 	<Input
-		size="small"
+		size="large"
 		type="text"
 		bind:value={studentFactors}
 		placeholder="Describe student factots and number of them (e.g., Five hyperactive children and one child with autism)"
+		primary={true}
 	/>
 	<Button type="submit" size="small" label={`Get Lesson`} on:click={handleSubmit} />
 	{#if responseMessage}
