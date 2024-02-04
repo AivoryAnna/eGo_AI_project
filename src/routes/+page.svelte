@@ -1,5 +1,10 @@
 <script>
-	import Page from '../lib/components/Page/Page.svelte';
+	import Page from '$pages/Page/Page.svelte';
+	import '../lib/styles/tailwind.css';
+	import Header from '$components/Header/Header.svelte';
 </script>
 
-<Page />
+<div class="bg-main">
+	<Header />
+	<Page />
+</div>

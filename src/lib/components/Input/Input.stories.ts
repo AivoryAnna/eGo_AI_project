@@ -1,4 +1,6 @@
+
 import type { Meta, StoryObj } from '@storybook/svelte';
+// @ts-ignore
 import Input from './Input.svelte'
 
 const meta = {
@@ -15,12 +17,3 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const LoggedIn: Story = {
-  args: {
-    user: {
-      name: 'Jane Doe',
-    },
-  },
-};
-
-export const LoggedOut: Story = {};

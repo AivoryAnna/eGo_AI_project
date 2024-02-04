@@ -1,32 +1,15 @@
 <script lang="ts">
-	import './header.css';
-	import Button from '../Button/Button.svelte';
-
-	import { createEventDispatcher } from 'svelte';
-
-	export let user: { name: string } | null = null;
-
-	const dispatch = createEventDispatcher();
-
-	function onLogin(event: MouseEvent) {
-		dispatch('login', event);
-	}
-	function onLogout(event: MouseEvent) {
-		dispatch('logout', event);
-	}
-	function onCreateAccount(event: MouseEvent) {
-		dispatch('createAccount', event);
-	}
+	import '../../styles/tailwind.css';
 </script>
 
-<header>
-	<div class="storybook-header">
-		<div>
+<header class="flex text-left p-5">
+	<div>
+		<div class="flex flex-row ">
 			<svg width="32" height="32" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
 				<defs>
 					<linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="0%">
-						<stop offset="0%" style="stop-color:#91BAF8;stop-opacity:1" />
-						<stop offset="100%" style="stop-color:#555AB9;stop-opacity:1" />
+						<stop offset="0%" style="stop-color:#222222;stop-opacity:1" />
+						<stop offset="100%" style="stop-color:#1ea7fd;stop-opacity:1" />
 					</linearGradient>
 					<filter id="f1" x="0" y="0" width="150%" height="150%">
 						<feOffset result="offOut" in="SourceGraphic" dx="1" dy="1" />
@@ -41,23 +24,12 @@
 				/>
 				<path
 					d="M20 3C22 5 22 9 20 11C18 13 14 13 12 11C10 9 10 5 12 3C14 1 18 1 20 3Z"
-					fill="#555AB9"
+					fill="#1ea7fd"
 					stroke="white"
 					stroke-width="1.5"
 				/>
 			</svg>
-			<h1>eGo</h1>
-		</div>
-		<div>
-			{#if user}
-				<span class="welcome">
-					Welcome, <b>{user.name}</b>!
-				</span>
-				<Button type="button" size="small" on:click={onLogout} label="Log out" />
-			{:else}
-				<Button type="button" size="small" on:click={onLogin} label="Log in" />
-				<Button type="button" primary size="small" on:click={onCreateAccount} label="Sign up" />
-			{/if}
+			<h1 class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white p-1">eGo</h1>
 		</div>
 	</div>
 </header>

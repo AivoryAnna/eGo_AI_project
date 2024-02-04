@@ -38,7 +38,7 @@ app.post('/chat', async (req, res) => {
                 messages: [
                     {
                         role: "system",
-                        content: "You are a wise teacher helping with creating lessons plans."
+                        content: "You are a psychologist who provides patients with psychological dilemmas to analyze their behavior in stressful and moral situations."
                     },
                     {
                         role: "user",

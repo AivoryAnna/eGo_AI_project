@@ -1,21 +1,8 @@
 <script lang="ts">
-  import '../Button/button.css';
-  export let primary = false;
-  export let backgroundColor: string | undefined = undefined;
-  export let size: 'small' | 'medium' | 'large' = 'medium';
-  export let label: string = '';
-  export let type: 'reset' | 'submit' | 'button' | undefined;
-
-  $: mode = primary ? 'storybook-button--primary' : 'storybook-button--secondary';
-
-  $: style = backgroundColor ? `background-color: ${backgroundColor}` : '';
-</script>
-
-<button
-  {type}
-  class={['storybook-button', `storybook-button--${size}`, mode].join(' ')}
-  {style}
-  on:click
->
-  {label}
-</button>
+    export let type: 'reset' | 'submit' | 'button' | undefined;
+    export let isFocused: boolean = false;
+  </script>
+  
+  <button {type} on:click class="absolute end-2.5 bottom-2.5 {isFocused ? 'bg-custom-blue hover:bg-custom-blue focus:ring-4 focus:outline-none focus:ring-custom-blue' : 'bg-light-blue '}  font-medium rounded-lg text-sm px-4 py-2">
+    <slot></slot>
+  </button>
