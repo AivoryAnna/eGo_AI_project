@@ -48,13 +48,13 @@ export default async function post(req: VercelRequest, res: VercelResponse) {
         'Authorization': `Bearer ${API_KEY}`,
       },
       body: JSON.stringify({
-        model: 'gpt-3.5-turbo',
+        model: 'gpt-4',
         temperature: 0.7,
         max_tokens: 2000,
         messages: [
           {
             role: 'system',
-            content: 'You are a psychologis.',
+            content: 'You are playing a social psychologist, you present the patient with social dilemmas. After the user/s response, you provide a psychological analysis of their answer on the lastest previous given by you dilemma and pose a new social dilemma, different from the one given to them before. Under no circumstances do you break character.',
           },
           {
             role: 'user',

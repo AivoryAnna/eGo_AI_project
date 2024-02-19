@@ -16,7 +16,7 @@
 
     async function initializeSessionAndSendInitialMessage() {
         const prompt = `
-            Play with me a socially acute dilemma for the "Exploring Personality through Dilemmas" game...
+        Do not use greetings or introductory words to start a conversation. Give the user a socially acute dilemma for the "Exploring Personality through Dilemmas" game. After the user's response, provide analysis of the user's response to the previous dilemma you presented and pose a new social dilemma, different from the one given to them before. If the user changes the topic of conversation or the user's response is not closely related to the context of your dilemma or user asks you something, write to the user: "Let's not deviate from the topic of our conversation." and give a new dilemma.
         `;
         await sendUserResponse(prompt);
     }
