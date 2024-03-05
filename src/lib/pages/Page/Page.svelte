@@ -6,11 +6,15 @@
 </script>
 
 <article>
-	<div class="flex justify-center items-center min-h-screen">
+	<div class="flex justify-center items-center">
 		{#if showWelcome}
-			<About on:continue={() => (showWelcome = false)} />
+			<div class="flex justify-center items-center pt-20">
+				<About on:continue={() => (showWelcome = false)} />
+			</div>
 		{:else}
-			<Gameplay />
+			<div class="flex justify-center items-center pt-0">
+				<Gameplay />
+			</div>
 		{/if}
 	</div>
 </article>

@@ -16,7 +16,7 @@ const config = {
 		adapter: vercel(),
 		alias: {
 			$components: 'src/lib/components',
-			$pages: 'src/lib/pages'
+			$pages: 'src/lib/pages',
 		  }
 		// target: '#svelte',
 		

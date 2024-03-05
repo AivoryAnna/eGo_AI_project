@@ -2,7 +2,7 @@
 	import '../../styles/tailwind.css';
 </script>
 
-<header class="flex text-left p-5">
+<header class="flex text-left p-5 overflow-hidden">
 	<div>
 		<div class="flex flex-row ">
 			<svg width="32" height="32" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">

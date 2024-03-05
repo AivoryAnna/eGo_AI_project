@@ -16,7 +16,7 @@
     }
 </script>
 
-<div class="mb-20 flex flex-col justify-center items-center text-center p-10">
+<div class="mb-20 flex flex-col justify-center items-center text-center p-10 overflow-hidden ">
 	<h1
 		class=" sm:mb-15 md:mb-5 mb-5 sm:text-2xl md:text-4xl lg:text-5xl xl:text-6xl font-extrabold tracking-tight leading-none text-font"
 	>

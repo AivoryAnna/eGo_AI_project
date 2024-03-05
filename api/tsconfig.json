@@ -1,16 +1,22 @@
 {
-    "compilerOptions": {
-      "target": "es2017", 
-      "module": "esnext", 
-      "lib": ["es2020", "dom"], 
-      "strict": true,
-      "moduleResolution": "node", 
-      "esModuleInterop": true,
-      "skipLibCheck": true, 
-      "forceConsistentCasingInFileNames": true, 
-      "isolatedModules": true, 
-      "resolveJsonModule": true, 
-      "types": ["node"] 
-    },
-  }
+  "compilerOptions": {
+    "target": "ES2018",
+    "module": "esnext",
+    "composite": false,
+    "declaration": true,
+    "declarationMap": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "inlineSources": false,
+    "isolatedModules": true,
+    "moduleResolution": "node",
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "preserveWatchOutput": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "types": ["@types/node", "vitest/globals"]
+  },
+  "include": ["."],
+}
   
