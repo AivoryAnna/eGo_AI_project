@@ -1,11 +1,12 @@
 <script lang="ts">
 	import '../../styles/tailwind.css';
+	export let showWelcome: boolean;
 </script>
 
-<header class="flex text-left p-5 overflow-hidden">
+<header class="flex text-left {showWelcome ? '' : 'sm:text-center lg:text-center sm:justify-center sm:items-center'} p-5 overflow-hidden w-full">
 	<div>
 		<div class="flex flex-row ">
-			<svg width="32" height="32" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+			<svg width="32" height="32" class="sm:w-6 lg:w-6" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
 				<defs>
 					<linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="0%">
 						<stop offset="0%" style="stop-color:#222222;stop-opacity:1" />
@@ -29,7 +30,7 @@
 					stroke-width="1.5"
 				/>
 			</svg>
-			<h1 class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white p-1">eGo</h1>
+			<h1 class="self-center text-2xl sm:text-xl md:text-xl font-semibold whitespace-nowrap  p-1">eGo</h1>
 		</div>
 	</div>
 </header>

@@ -4,11 +4,8 @@
 	import Header from '$components/Header/Header.svelte';
 </script>
 
-<div class="bg-main overflow-hidden flex flex-col h-screen">
-	<div class="flex-none">
-		<Header />
-	</div>
-	<div class="flex-none h-full">
-		<Page />
+<div class="bg-main h-[100dvh] ">
+	<div class="flex-none ">
+		<Page /> 
 	</div>
 </div>
