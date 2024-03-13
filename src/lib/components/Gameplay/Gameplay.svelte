@@ -3,40 +3,85 @@
 	import Button from '$components/Button/Button.svelte';
 	import '../../styles/tailwind.css';
 	import { useChat } from 'ai/svelte';
-	import { onMount, afterUpdate } from 'svelte';
+	import { onMount, afterUpdate, onDestroy } from 'svelte';
 	import { writable } from 'svelte/store';
+	import { createEventDispatcher } from 'svelte';
+	const dispatch = createEventDispatcher();
 
-	let inputElementRef: { current: HTMLInputElement | null } = { current: null };
 	let specialMessage = writable(false);
-	const { messages, input, handleSubmit, append, isLoading } = useChat();
+	let newStart = false;
+	const { messages, input, handleSubmit, append, isLoading, setMessages } = useChat();
+	let showButton = false;
+	let userMessages = 0;
+	let isInputFocused = false;
+	let currentMessageIndex = 0;
+	let intervalId: number | undefined;
+	let quotes = [
+		'The more dilemmas you go through, the deeper your portrait will be.',
+		'More detailed responses to dilemmas provide more space for analysis.',
+		'Explaining the motives behind your choice gives an advantage for selecting an individual dilemma.'
+	];
+
+
+	$: if (userMessages > 3) {
+		showButton = true;
+	}
+
+	function showNextMessage() {
+		currentMessageIndex = (currentMessageIndex + 1) % quotes.length;
+	}
 
 	onMount(() => {
-		if (inputElementRef.current) {
-			inputElementRef.current.focus();
-		}
+		intervalId = setInterval(showNextMessage, 3000) as unknown as number;
 	});
+
+	onDestroy(() => {
+		clearInterval(intervalId);
+	});
+
+	function handleYesClick() {
+		specialMessage.set(false);
+		newStart = false;
+		userMessages = 0;
+		currentMessageIndex = 0;
+		initializeSessionAndSendInitialMessage();
+		setMessages([]);
+		dispatch('reset', {});
+	}
 
 	onMount(() => {
 		initializeSessionAndSendInitialMessage();
 	});
 
+	$: $specialMessage && initializeSessionAndSendInitialMessage();
+
 	async function initializeSessionAndSendInitialMessage() {
-		const initialPrompt: string = `
-        Do not use greetings or introductory words to start a conversation. Give the user a socially acute hard dilemma for the "Exploring Personality through Dilemmas" game. After the user's response, provide analysis of the user's response to the previous dilemma you presented and pose a new social dilemma, different and harder from the one given to them before. If the user changes the topic of conversation or the user's response is not closely related to the context of your dilemma or user asks you something, ask  the user to not deviate from the topic of the conversation and give a new dilemma. If you notice that the user has responded to 3 dilemmas within the context write him:  Are you ready to get your full result?. If the user agrees, compose their psychological profile by analyzing the entire conversation.
+		let initialPrompt: string = `
+        Do not use greetings or introductory words to start a conversation. Give me a socially acute hard dilemma for the "Exploring Personality through Dilemmas" game. If it is not first dillema, give me analyse of my previous answer. Every new dillema should be different and harder from the one given to me before. 
+		If I change the topic of conversation or my response is not closely related to the context of your dilemma or I ask you something, tell me about it and give me a new dilemma. 
         `;
+		const unsubscribe = specialMessage.subscribe((value) => {
+			if (value) {
+				initialPrompt = `Analyze our entire conversation. If my responses were brief, inform me about this and write a short psychological portrait about me based
+				on your questions and my answers in context.   If I provided detailed answers, write an extensive psychological portrait about me based
+				on your questions and my answers in context. If I conquered the same answer, provide short psychological portrait about me and indicate that I did not take the task seriously enough.   identify my strong character traits if I've demonstrated them, and leadership qualities if I've shown any.
+				If my responses were off-topic or I kept asking questions and straying from the topic, let me know about this and suggest me play again.
+ `;
+				newStart = true;
+			}
+		});
 		await sendInitialMessage(initialPrompt);
+		unsubscribe();
 	}
 	async function sendInitialMessage(messageToSend: string) {
-		await append({ content: messageToSend, role: 'assistant' });
+		await append({ content: messageToSend, role: 'system' });
 	}
-
-	let isInputFocused = false;
 
 	const handleInputFocus = () => {
 		isInputFocused = true;
-		if (inputElementRef.current) {
-			inputElementRef.current.focus();
-		}
+	};
+	const handleButtonClick = () => {
+		specialMessage.set(true);
 	};
 
 	$: $messages, afterUpdate(scrollToBottom);
@@ -47,34 +92,125 @@
 			chatContainer.scrollTop = chatContainer.scrollHeight;
 		}
 	}
+
+	$: userMessages = $messages.filter((m) => m.role === 'user').length;
 </script>
 
 <div
-	class="flex justify-center items-center w-3/5 sm:w-[100dvh] md:w-4/5 lg:w-4/5 pl-3 pr-3 sm:pl-5 sm:pr-5"
+	class="flex relative justify-start items-center w-3/5 sm:w-[100dvh] md:w-4/5 lg:w-4/5 pl-3 pr-3 sm:pl-5 sm:pr-5 p-3 sm:p-5"
 >
-	<div id="chat-container" class="overflow-scroll scroll-smooth p-0 h-[calc(100%-25%)] mb-12">
-		{#each $messages.slice(1) as m (m.id)}
-			<div class="flex justify-start items-start text-start">
-				<span class="pr-1 pt-2 font-bold">{m.role === 'user' ? 'You' : 'eGo'}: </span>
-				<span class={m.role === 'user' ? 'text-custom-blue pt-2' : 'pb-2 pt-2'}>
-					{m.content}
-				</span>
+	<div id="chat-container" class=" overflow-scroll scroll-smooth p-0 h-[calc(100%-25%)] mb-12">
+		{#if !$specialMessage}
+			{#each $messages as m (m.id)}
+				{#if m.role !== 'system'}
+					<div class="flex justify-start items-start text-start">
+						<span class="pr-1 pt-2 font-bold">{m.role === 'user' ? 'You' : 'eGo'}: </span>
+						<span class={m.role === 'user' ? 'text-custom-blue pt-2' : 'pb-2 pt-2'}>
+							{m.content}
+						</span>
+					</div>
+				{/if}
+			{/each}
+		{/if}
+		{#if $messages.length > 1 && $specialMessage}
+			{#if $isLoading}
+				<div
+					role="status"
+					class="flex absolute l-[50%] t-[50%] flex-col justify-center h-[calc(100%-20%)] items-center w-[100%]"
+				>
+					<svg
+						aria-hidden="true"
+						class="inline w-20 h-20 sm:w-10 sm:h-10 md:w-10 md:h-10 text-font animate-spin fill-custom-blue"
+						viewBox="0 0 100 101"
+						fill="none"
+						xmlns="http://www.w3.org/2000/svg"
+					>
+						<path
+							d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+							fill="currentColor"
+						/>
+						<path
+							d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+							fill="currentFill"
+						/>
+					</svg>
+					<div class="flex justify-center p-5">
+						{quotes[currentMessageIndex]}
+					</div>
+				</div>
+			{/if}
+
+			{#if !$isLoading}
+				<div class="mt-[8%] flex flex-col -b-2 p-10">
+					<span class="pr-1 pt-2 font-bold">
+						{$messages[$messages.length - 1].role === 'user' ? 'You' : 'eGo portrait'}:
+					</span>
+					<span class="pb-2 pt-2">
+						{$messages[$messages.length - 1].content}
+					</span>
+				</div>
+			{/if}
+		{/if}
+		{#if showButton && $isLoading == false && !newStart}
+			<div class="flex justify-start items-center text-start pl-[4.5%]">
+				<h5 class="text-md tracking-tight text-font">
+					The personality exploration portrait from eGo is ready now
+				</h5>
+
+				<div
+					role="button"
+					tabindex="0"
+					aria-label="Activate to get the personality exploration portrait"
+					class="cursor-pointer hover:opacity-100 opacity-50 ml-2 end-1.5 bottom-1.5 px-4 py-2 rounded-lg bg-custom-blue text-md text-left tracking-tight text-font"
+					on:click={handleButtonClick}
+				>
+					get
+				</div>
 			</div>
-		{/each}
+		{/if}
 	</div>
+
 	<form
-		class="mb-10 sm:mb-10 md:mb-10 lg:mb-[70px] fixed bottom-0 z-50 w-3/5 h-16 bg-transparent sm:w-screen md:w-4/5 lg:w-4/5 sm:pl-3 sm:pr-3 md:pl-3 md:pr-3"
+		class="mb-10 sm:mb-10 md:mb-10 lg:mb-[70px] fixed justify-center items-center mr-auto ml-auto bottom-0 z-50 w-3/5 min-h-16 bg-transparent sm:w-screen md:w-4/5 lg:w-4/5 sm:pl-3 sm:pr-3 md:pl-3 md:pr-3"
 		on:submit={handleSubmit}
 	>
-		<label for="answer" class="mb-2 text-sm font-medium text-gray-900 sr-only">Answer</label>
-		{#if $isLoading == false}
+		{#if newStart && $isLoading == false}
+			<div class="mb-[7%] flex justify-center items-center w-[100%]">
+				<div
+					tabindex="0"
+					role="button"
+					class="inline-flex items-center w-[30%] p-5 text-font bg-white border border-custom-blue rounded-lg cursor-pointer peer-checked:border-custom-blue peer-checked:text-blue-600 hover:text-font hover:bg-main"
+				>
+					<div class="block text-left justify-self-center" on:click={handleYesClick}>
+						<div class="w-full text-lg font-semibold">One more time?</div>
+						<div class="w-full">Get started</div>
+					</div>
+
+					<svg
+						class="w-5 h-5 ms-3 rtl:rotate-180"
+						aria-hidden="true"
+						xmlns="http://www.w3.org/2000/svg"
+						fill="none"
+						viewBox="0 0 14 10"
+					>
+						<path
+							stroke="#222222"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-width="2"
+							d="M1 5h12m0 0L9 1m4 4L9 9"
+						/>
+					</svg>
+				</div>
+			</div>
+		{/if}
+		{#if $isLoading == false && !newStart}
 			<div class="relative">
 				<Input
 					size="large"
 					type="text"
 					id="answer"
 					bind:value={$input}
-					bind:innerRef={inputElementRef}
 					placeholder="Enter your answer..."
 					on:focus={handleInputFocus}
 				/>

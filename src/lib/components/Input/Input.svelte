@@ -9,12 +9,13 @@
 	export let value: string = '';
 	export let group: string = '';
 	export let innerRef: { current: null | HTMLInputElement } = { current: null };
+	
 
 	let baseClasses = 'block p-4 ps-5 text-sm text-font border border-custom-blue rounded-lg bg-main focus:ring-custom-blue focus:border-custom-blue focus:outline-none focus:ring-0';
 	let sizeClasses = {
 		small: 'p-2 text-sm',
 		medium: 'p-3 text-base',
-		large: 'w-full'
+		large: 'w-full pr-[8%]'
 	};
 </script>
 

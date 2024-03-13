@@ -11,7 +11,8 @@
       "forceConsistentCasingInFileNames": true, 
       "isolatedModules": true, 
       "resolveJsonModule": true,
-      "types": ["svelte", "node"] 
+      "types": ["svelte", "node"],
+      "jsx": "preserve"
     },
     "include": ["src/**/*", "src/routes/api", "src/routes/api/chat.ts", "firebase.js"], 
     "exclude": ["node_modules/*", "__sapper__/*", "public/*"]

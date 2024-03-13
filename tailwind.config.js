@@ -18,7 +18,7 @@ export default {
       'main': '#FBFBF8',
       'btn-background': '#C3A27A',
       'font': '#222222',
-    }
+    },
   },
   plugins: [],
 }

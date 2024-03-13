@@ -6,6 +6,7 @@
 
 	function handleHostClick() {
         dispatch('continue');
+		dispatch('changeComponent', { component: 'Gameplay' });
     }
 
 	function handleKeyDown(event: KeyboardEvent) {
@@ -14,6 +15,7 @@
             event.preventDefault();
         }
     }
+	
 </script>
 
 <div class="sm:mt-[calc(100%-90%)] md:mt-[calc(100%-90%)] lg:mt-[calc(100%-95%)] mt-[calc(100%-98%)]  flex flex-col justify-center items-center text-center pr-10 pl-10 overflow-hidden ">

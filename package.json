@@ -13,20 +13,10 @@
     "format": "prettier --write .",
     "test:integration": "playwright test",
     "test:unit": "vitest",
-    "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build",
     "start-server": "npx tsx ./src/lib/server/server.ts"
   },
   "devDependencies": {
     "@playwright/test": "^1.28.1",
-    "@storybook/addon-essentials": "^7.6.6",
-    "@storybook/addon-interactions": "^7.6.6",
-    "@storybook/addon-links": "^7.6.6",
-    "@storybook/addon-styling-webpack": "^0.0.6",
-    "@storybook/blocks": "^7.6.6",
-    "@storybook/svelte": "^7.6.6",
-    "@storybook/sveltekit": "^7.6.6",
-    "@storybook/test": "^7.6.6",
     "@sveltejs/adapter-auto": "^3.1.0",
     "@sveltejs/adapter-node": "^2.0.2",
     "@sveltejs/adapter-vercel": "^5.1.0",
@@ -75,5 +65,4 @@
     "openai-edge": "^1.2.2",
     "uuid": "^9.0.1"
   }
-  
 }
