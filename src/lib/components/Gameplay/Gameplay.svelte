@@ -6,6 +6,7 @@
 	import { onMount, afterUpdate, onDestroy } from 'svelte';
 	import { writable } from 'svelte/store';
 	import { createEventDispatcher } from 'svelte';
+	import { t, locale, locales } from '../../../locales/i18n';
 	const dispatch = createEventDispatcher();
 
 	let specialMessage = writable(false);
@@ -15,28 +16,42 @@
 	let userMessages = 0;
 	let isInputFocused = false;
 	let currentMessageIndex = 0;
+	let currentSmMessageIndex = 0;
 	let intervalId: number | undefined;
-	let quotes = [
-		'The more dilemmas you go through, the deeper your portrait will be.',
-		'More detailed responses to dilemmas provide more space for analysis.',
-		'Explaining the motives behind your choice gives an advantage for selecting an individual dilemma.'
-	];
+	let intervaSmlId: number | undefined;
+	let firstRule = $t('rule.first');
+	let secondRule = $t('rule.second');
+	let thirdRule = $t('rule.third');
+	let smfirstRule = $t('smrule.first');
+	let smsecondRule = $t('smrule.second');
+	let smthirdRule = $t('smrule.third');
+	let quotes = [firstRule, secondRule, thirdRule];
+	let smquotes = [smfirstRule, smsecondRule, smthirdRule];
+	let userScrolled = false;
+	let isProgrammaticScroll = true;
 
-
-	$: if (userMessages > 3) {
+	$: if (userMessages > 0) {
 		showButton = true;
 	}
 
 	function showNextMessage() {
 		currentMessageIndex = (currentMessageIndex + 1) % quotes.length;
 	}
-
+	function showSmNextMessage() {
+		currentSmMessageIndex = (currentSmMessageIndex + 1) % smquotes.length;
+	}
+	onMount(() => {
+		intervaSmlId = setInterval(showSmNextMessage, 3000) as unknown as number;
+	});
 	onMount(() => {
 		intervalId = setInterval(showNextMessage, 3000) as unknown as number;
 	});
 
 	onDestroy(() => {
 		clearInterval(intervalId);
+	});
+	onDestroy(() => {
+		clearInterval(intervaSmlId);
 	});
 
 	function handleYesClick() {
@@ -56,17 +71,26 @@
 	$: $specialMessage && initializeSessionAndSendInitialMessage();
 
 	async function initializeSessionAndSendInitialMessage() {
-		let initialPrompt: string = `
+		let initialPrompt: string =
+			$locale === 'en'
+				? `
         Do not use greetings or introductory words to start a conversation. Give me a socially acute hard dilemma for the "Exploring Personality through Dilemmas" game. If it is not first dillema, give me analyse of my previous answer. Every new dillema should be different and harder from the one given to me before. 
 		If I change the topic of conversation or my response is not closely related to the context of your dilemma or I ask you something, tell me about it and give me a new dilemma. 
-        `;
+        `
+				: `Не используй приветствия или вводные слова, чтобы начать разговор, начинай сразу с текста дилеммы. Предложи мне социально острую сложную дилемму для игры "Исследование личности через дилеммы". Если это не первая дилемма, дай мне анализ моего предыдущего ответа. Каждая новая дилемма должна быть сложнее , чем была предложена мне ранее. 
+		Если я изменю тему разговора или мой ответ не будет тесно связан с контекстом твоей дилеммы, или я задам тебе вопрос, скажи  мне об этом и дай мне новую дилемму.`;
 		const unsubscribe = specialMessage.subscribe((value) => {
 			if (value) {
-				initialPrompt = `Analyze our entire conversation. If my responses were brief, inform me about this and write a short psychological portrait about me based
+				initialPrompt =
+					$locale === 'en'
+						? `Analyze our entire conversation. If my responses were brief, inform me about this and write a short psychological portrait about me based
 				on your questions and my answers in context.   If I provided detailed answers, write an extensive psychological portrait about me based
 				on your questions and my answers in context. If I conquered the same answer, provide short psychological portrait about me and indicate that I did not take the task seriously enough.   identify my strong character traits if I've demonstrated them, and leadership qualities if I've shown any.
 				If my responses were off-topic or I kept asking questions and straying from the topic, let me know about this and suggest me play again.
- `;
+ `
+						: `Проанализируй весь наш разговор. Если мои ответы были краткими, сообщи мне об этом и напиши обширный психологический портрет обо мне, основываясь на твоих вопросах и моих ответах в контексте. Если я предоставил подробные ответы, напиши обширный психологический портрет обо мне, основываясь на твоих вопросах и моих ответах в контексте. Если я повторял один и тот же ответ, предоставь короткий психологический портрет обо мне и укажи, что я не отнесся к задаче достаточно серьезно. 
+ Определи мои сильные черты характера, если я их продемонстрировал, и лидерские качества, если они у меня есть. 
+ Если мои ответы были не по теме или я продолжал задавать вопросы и отходить от темы, дай мне знать об этом и предложите сыграть еще раз.`;
 				newStart = true;
 			}
 		});
@@ -79,6 +103,8 @@
 
 	const handleInputFocus = () => {
 		isInputFocused = true;
+		userScrolled = false;
+		isProgrammaticScroll = true;
 	};
 	const handleButtonClick = () => {
 		specialMessage.set(true);
@@ -88,8 +114,46 @@
 
 	function scrollToBottom() {
 		const chatContainer = document.getElementById('chat-container');
-		if (chatContainer && chatContainer.scrollHeight > chatContainer.clientHeight) {
-			chatContainer.scrollTop = chatContainer.scrollHeight;
+		const resultContainer = document.getElementById('result-container');
+
+		if (chatContainer) {
+			chatContainer.addEventListener('touchstart', () => {
+				userScrolled = true;
+				isProgrammaticScroll = false;
+			});
+			chatContainer.addEventListener('mousedown', () => {
+				userScrolled = true;
+				isProgrammaticScroll = false;
+			});
+			chatContainer.addEventListener('wheel', () => {
+				userScrolled = true;
+				isProgrammaticScroll = false;
+			});
+
+			if (
+				!userScrolled &&
+				isProgrammaticScroll &&
+				chatContainer.scrollHeight > chatContainer.clientHeight
+			) {
+				chatContainer.scrollTop = chatContainer.scrollHeight;
+			}
+		}
+		if (resultContainer) {
+			resultContainer.addEventListener('touchstart', () => {
+				userScrolled = true;
+				isProgrammaticScroll = false;
+			});
+			resultContainer.addEventListener('mousedown', () => {
+				userScrolled = true;
+				isProgrammaticScroll = false;
+			});
+			resultContainer.addEventListener('wheel', () => {
+				userScrolled = true;
+				isProgrammaticScroll = false;
+			});
+			if (!userScrolled && isProgrammaticScroll) {
+				resultContainer.scrollTop = 0;
+			}
 		}
 	}
 
@@ -99,13 +163,22 @@
 <div
 	class="flex relative justify-start items-center w-3/5 sm:w-[100dvh] md:w-4/5 lg:w-4/5 pl-3 pr-3 sm:pl-5 sm:pr-5 p-3 sm:p-5"
 >
-	<div id="chat-container" class=" overflow-scroll scroll-smooth p-0 h-[calc(100%-25%)] mb-12">
+	<div
+		id={$specialMessage ? 'result-container' : 'chat-container'}
+		class=" overflow-scroll scroll-smooth p-0 h-[calc(100%-25%)] mb-12 scrollbar-hide"
+	>
 		{#if !$specialMessage}
 			{#each $messages as m (m.id)}
 				{#if m.role !== 'system'}
 					<div class="flex justify-start items-start text-start">
-						<span class="pr-1 pt-2 font-bold">{m.role === 'user' ? 'You' : 'eGo'}: </span>
-						<span class={m.role === 'user' ? 'text-custom-blue pt-2' : 'pb-2 pt-2'}>
+						<span class="pr-1 pt-2 font-bold">{m.role === 'user' ? $t('user.user') : 'eGo'}: </span>
+						<span
+							class={m.role === 'user' && $locale === 'en'
+								? 'text-custom-blue pt-2'
+								: m.role === 'user' && $locale === 'ru'
+									? 'text-custom-blue pt-2 pl-1.5 '
+									: 'pb-2 pt-2'}
+						>
 							{m.content}
 						</span>
 					</div>
@@ -116,11 +189,11 @@
 			{#if $isLoading}
 				<div
 					role="status"
-					class="flex absolute l-[50%] t-[50%] flex-col justify-center h-[calc(100%-20%)] items-center w-[100%]"
+					class="flex absolute l-[50%] t-[50%] flex-col justify-center h-[calc(100%-20%)] items-center w-[100%] sm:w-[91.5%] md:w-[98.5%] lg:w-[100%]"
 				>
 					<svg
 						aria-hidden="true"
-						class="inline w-20 h-20 sm:w-10 sm:h-10 md:w-10 md:h-10 text-font animate-spin fill-custom-blue"
+						class="inline w-20 h-20 text-font animate-spin fill-custom-blue"
 						viewBox="0 0 100 101"
 						fill="none"
 						xmlns="http://www.w3.org/2000/svg"
@@ -134,16 +207,19 @@
 							fill="currentFill"
 						/>
 					</svg>
-					<div class="flex justify-center p-5">
+					<div class="flex justify-center text-center p-5 sm:hidden">
 						{quotes[currentMessageIndex]}
+					</div>
+					<div class="flex justify-center text-center p-2 md:hidden lg:hidden xl:hidden">
+						{smquotes[currentSmMessageIndex]}
 					</div>
 				</div>
 			{/if}
 
 			{#if !$isLoading}
-				<div class="mt-[8%] flex flex-col -b-2 p-10">
+				<div class="mt-[8%] flex flex-col -b-2 p-10 sm:p-2 sm:h-[calc(100%-35%)]">
 					<span class="pr-1 pt-2 font-bold">
-						{$messages[$messages.length - 1].role === 'user' ? 'You' : 'eGo portrait'}:
+						{$messages[$messages.length - 1].role === 'user' ? $t('user.user') : $t('user.eGo')}:
 					</span>
 					<span class="pb-2 pt-2">
 						{$messages[$messages.length - 1].content}
@@ -152,11 +228,13 @@
 			{/if}
 		{/if}
 		{#if showButton && $isLoading == false && !newStart}
-			<div class="flex justify-start items-center text-start pl-[4.5%]">
-				<h5 class="text-md tracking-tight text-font">
-					The personality exploration portrait from eGo is ready now
+			<div class="flex justify-start items-center text-start pl-[4.5%] sm:pl-[9%]">
+				<h5 class="text-md tracking-tight text-font sm:hidden md:hidden">
+					{$t('portrait.exploration')}
 				</h5>
-
+				<h5 class="text-md tracking-tight text-font lg:hidden xl:hidden">
+					{$t('smportrait.exploration')}
+				</h5>
 				<div
 					role="button"
 					tabindex="0"
@@ -164,26 +242,26 @@
 					class="cursor-pointer hover:opacity-100 opacity-50 ml-2 end-1.5 bottom-1.5 px-4 py-2 rounded-lg bg-custom-blue text-md text-left tracking-tight text-font"
 					on:click={handleButtonClick}
 				>
-					get
+					{$t('get.portrait')}
 				</div>
 			</div>
 		{/if}
 	</div>
 
 	<form
-		class="mb-10 sm:mb-10 md:mb-10 lg:mb-[70px] fixed justify-center items-center mr-auto ml-auto bottom-0 z-50 w-3/5 min-h-16 bg-transparent sm:w-screen md:w-4/5 lg:w-4/5 sm:pl-3 sm:pr-3 md:pl-3 md:pr-3"
+		class="mb-10 sm:mb-10 md:mb-10 lg:mb-[70px] fixed justify-center items-center self-center bottom-0 z-50 w-3/5 min-h-16 bg-transparent sm:w-[90%] md:w-[80%] lg:w-4/5 sm:pl-0 sm:pr-0 md:pl-0 md:pr-0"
 		on:submit={handleSubmit}
 	>
 		{#if newStart && $isLoading == false}
-			<div class="mb-[7%] flex justify-center items-center w-[100%]">
+			<div class="mb-[7%] sm:mb-0 flex justify-center self-center items-center w-[100%]">
 				<div
 					tabindex="0"
 					role="button"
-					class="inline-flex items-center w-[30%] p-5 text-font bg-white border border-custom-blue rounded-lg cursor-pointer peer-checked:border-custom-blue peer-checked:text-blue-600 hover:text-font hover:bg-main"
+					class="inline-flex items-center w-[30%] sm:w-[60%] md:w-[40%] lg:w-[25%] p-5 sm:p-3 md:p-3 lg:p-4 text-font bg-white border border-custom-blue rounded-lg cursor-pointer hover:text-font hover:bg-main"
 				>
 					<div class="block text-left justify-self-center" on:click={handleYesClick}>
-						<div class="w-full text-lg font-semibold">One more time?</div>
-						<div class="w-full">Get started</div>
+						<div class="w-full text-lg font-semibold">{$t('more.play')}</div>
+						<div class="w-full">{$t('start.again')}</div>
 					</div>
 
 					<svg
@@ -205,13 +283,13 @@
 			</div>
 		{/if}
 		{#if $isLoading == false && !newStart}
-			<div class="relative">
+			<div class="relative justify-center items-center mr-auto ml-auto bg-transparent w-full">
 				<Input
 					size="large"
 					type="text"
 					id="answer"
 					bind:value={$input}
-					placeholder="Enter your answer..."
+					placeholder={$t('enter.answer')}
 					on:focus={handleInputFocus}
 				/>
 				<Button type="submit" isFocused={isInputFocused}

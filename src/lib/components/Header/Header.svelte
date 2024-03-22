@@ -2,17 +2,31 @@
 	import '../../styles/tailwind.css';
 	export let showWelcome: boolean;
 	import { createEventDispatcher } from 'svelte';
-    const dispatch = createEventDispatcher();
+	import { t, locale, locales } from '../../../locales/i18n';
+	const dispatch = createEventDispatcher();
+	
 
 	function handleClick() {
-        dispatch('changeComponent', { component: 'About' });
-    }
+		dispatch('changeComponent', { component: 'About' });
+		showWelcome = true;
+		console.log('clicked')
+	}
 </script>
 
-<header class="flex text-left {showWelcome ? '' : 'sm:text-center lg:text-center sm:justify-center sm:items-center'} p-5 overflow-hidden w-full">
-	<div class='flex row'>
-		<div class="flex flex-row cursor-pointer " on:click={handleClick}>
-			<svg width="32" height="32" class="sm:w-6 lg:w-6 " viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<header
+	class="flex z-10 {showWelcome
+		? 'text-left'
+		: 'sm:text-center lg:text-center sm:justify-center sm:items-center'} p-5  w-full"
+>
+	<div class="flex row z-50 p-2" on:click={handleClick} on:touchmove={handleClick}>
+		<div class="flex flex-row cursor-pointer" >
+			<svg
+				width="32"
+				height="32"
+				class="sm:w-6 lg:w-6"
+				viewBox="0 0 24 24"
+				xmlns="http://www.w3.org/2000/svg"
+			>
 				<defs>
 					<linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="0%">
 						<stop offset="0%" style="stop-color:#222222;stop-opacity:1" />
@@ -36,7 +50,22 @@
 					stroke-width="1.5"
 				/>
 			</svg>
-			<h1 class="self-center text-2xl sm:text-xl md:text-xl font-semibold whitespace-nowrap  p-1">eGo</h1>
+			<h1 class="self-center text-2xl sm:text-xl md:text-xl font-semibold whitespace-nowrap p-1">
+				eGo
+			</h1>
 		</div>
 	</div>
+	{#if showWelcome}
+	<form class="max-w-sm mx-auto bg-main right-0 absolute mr-9 z-20">
+		<select
+			bind:value={$locale}
+			id="countries"
+			class=" appearance-none bg-main text-font text-md sm:text-md md:text-md outline-none font-semibold rounded-lg focus:ring-transparent focus:border-transparent block w-full p-0"
+		>
+			{#each locales as l}
+				<option value={l}>{l === 'en' ? 'En' : 'Ru '}</option>
+			{/each}
+		</select>
+	</form>
+	{/if}
 </header>

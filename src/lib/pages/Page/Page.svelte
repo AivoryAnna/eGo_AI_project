@@ -19,7 +19,7 @@
 
 <article>
 	<div class="overflow-hidden flex flex-col h-[100dvh]">
-		<div class="fixed">
+		<div class="fixed w-full">
 			<Header {showWelcome}  on:changeComponent={handleChangeComponent} />
 		</div>
 		{#if showWelcome || showComponent === 'About'}

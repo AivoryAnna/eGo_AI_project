@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
 	import '../../styles/tailwind.css';
+	import { t, locale, locales } from "../../../locales/i18n";
 
 	const dispatch = createEventDispatcher();
 
@@ -22,13 +23,13 @@
 	<h1
 		class=" sm:mb-15 md:mb-5 mb-5 sm:text-2xl md:text-4xl lg:text-5xl xl:text-6xl font-extrabold tracking-tight leading-none text-font"
 	>
-		Discover Your Uniqueness
+	{$t("homepage.title")}
 	</h1>
 	<p class="mb-20 font-normal text-font sm:hidden md:hidden lg:text-2xl xl:text-2xl">
-		Embark on an adventure into self-discovery by diving into social games with AI.
+		{$t("homepage.description")}
 	</p>
 	<p class="mb-20 sm:mb-10 font-normal text-font sm:text-base md:text-2xl lg:hidden xl:hidden">
-		Embark on an adventure with AI.
+		{$t("smhomepage.description")}
 	</p>
 	<div class=" mb-0 flex w-full flex-row justify-center items-center justify-start">
 		<div>
@@ -40,8 +41,8 @@
 				class="inline-flex items-center w-full p-5 text-font bg-white border border-custom-blue rounded-lg cursor-pointer peer-checked:border-custom-blue peer-checked:text-blue-600 hover:text-font hover:bg-main"
 			>
 				<div class="block text-left justify-self-center">
-					<div class="w-full text-lg font-semibold">Start Game</div>
-					<div class="w-full">I am ready to discover myself.</div>
+					<div class="w-full text-lg font-semibold">{$t("start.game")}</div>
+					<div class="w-full">{$t("game.description")}.</div>
 				</div>
 
 				<svg
