@@ -1,25 +1,21 @@
 <script lang="ts">
 	import '../../styles/tailwind.css';
 	export let showWelcome: boolean;
-	import { createEventDispatcher } from 'svelte';
 	import { t, locale, locales } from '../../../locales/i18n';
-	const dispatch = createEventDispatcher();
-	
+	import { currentComponent } from '../../../stores';
 
 	function handleClick() {
-		dispatch('changeComponent', { component: 'About' });
-		showWelcome = true;
-		console.log('clicked')
+		currentComponent.set('About'); 
+		showWelcome = false; 
+		localStorage.removeItem('chatMessages');
 	}
 </script>
 
-<header
-	class="flex z-10 {showWelcome
-		? 'text-left'
-		: 'sm:text-center lg:text-center sm:justify-center sm:items-center'} p-5  w-full"
->
-	<div class="flex row z-50 p-2" on:click={handleClick} on:touchmove={handleClick}>
-		<div class="flex flex-row cursor-pointer" >
+<header class="flex z-10 {!showWelcome
+	? 'text-left'
+	: 'sm:text-center lg:text-center sm:justify-center sm:items-center'} p-5  w-full">
+	<div class="flex row p-2">
+		<div class="flex flex-row z-50 cursor-pointer" on:click={handleClick} >
 			<svg
 				width="32"
 				height="32"
@@ -56,11 +52,11 @@
 		</div>
 	</div>
 	{#if showWelcome}
-	<form class="max-w-sm mx-auto bg-main right-0 absolute mr-9 z-20">
+	<form class="max-w-sm mx-auto bg-main right-0 absolute mr-9 z-20 pt-3 ">
 		<select
 			bind:value={$locale}
 			id="countries"
-			class=" appearance-none bg-main text-font text-md sm:text-md md:text-md outline-none font-semibold rounded-lg focus:ring-transparent focus:border-transparent block w-full p-0"
+			class="cursor-pointer appearance-none bg-main text-font text-md sm:text-md md:text-md outline-none font-semibold rounded-lg focus:ring-transparent focus:border-transparent block w-full p-0"
 		>
 			{#each locales as l}
 				<option value={l}>{l === 'en' ? 'En' : 'Ru '}</option>

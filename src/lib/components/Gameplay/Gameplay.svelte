@@ -7,13 +7,17 @@
 	import { writable } from 'svelte/store';
 	import { createEventDispatcher } from 'svelte';
 	import { t, locale, locales } from '../../../locales/i18n';
+	import { nanoid } from 'nanoid';
 	const dispatch = createEventDispatcher();
 
 	let specialMessage = writable(false);
 	let newStart = false;
-	const { messages, input, handleSubmit, append, isLoading, setMessages } = useChat();
-	let showButton = false;
-	let userMessages = 0;
+	const { messages, input, handleSubmit, append, isLoading, setMessages, reload } = useChat({
+		id: nanoid()
+	});
+	let initialPromptSent = false;
+	let showButton = writable(false);
+	let userMessages = writable(0);
 	let isInputFocused = false;
 	let currentMessageIndex = 0;
 	let currentSmMessageIndex = 0;
@@ -30,8 +34,8 @@
 	let userScrolled = false;
 	let isProgrammaticScroll = true;
 
-	$: if (userMessages > 0) {
-		showButton = true;
+	$: if ($userMessages > 3) {
+		$showButton = true;
 	}
 
 	function showNextMessage() {
@@ -50,6 +54,7 @@
 	onDestroy(() => {
 		clearInterval(intervalId);
 	});
+
 	onDestroy(() => {
 		clearInterval(intervaSmlId);
 	});
@@ -57,15 +62,26 @@
 	function handleYesClick() {
 		specialMessage.set(false);
 		newStart = false;
-		userMessages = 0;
+		$userMessages = 0;
 		currentMessageIndex = 0;
-		initializeSessionAndSendInitialMessage();
+		localStorage.removeItem('chatMessages');
 		setMessages([]);
+		initializeSessionAndSendInitialMessage();
 		dispatch('reset', {});
 	}
 
-	onMount(() => {
-		initializeSessionAndSendInitialMessage();
+	onMount(async () => {
+		const storedMessages = localStorage.getItem('chatMessages');
+		if (storedMessages !== null) {
+			setMessages(JSON.parse(storedMessages));
+		} else {
+			initialPromptSent = true;
+			await initializeSessionAndSendInitialMessage();
+		}
+
+		messages.subscribe(($messages) => {
+			localStorage.setItem('chatMessages', JSON.stringify($messages));
+		});
 	});
 
 	$: $specialMessage && initializeSessionAndSendInitialMessage();
@@ -74,27 +90,30 @@
 		let initialPrompt: string =
 			$locale === 'en'
 				? `
-        Do not use greetings or introductory words to start a conversation. Give me a socially acute hard dilemma for the "Exploring Personality through Dilemmas" game. If it is not first dillema, give me analyse of my previous answer. Every new dillema should be different and harder from the one given to me before. 
-		If I change the topic of conversation or my response is not closely related to the context of your dilemma or I ask you something, tell me about it and give me a new dilemma. 
+        Do not use greetings or introductory words to start a conversation. Give me a  socially acute hard dilemma for the "Exploring Personality through Dilemmas" game. Dilemmas must be complex and put me in truly difficult social choices. If it is not first dillema, give me analyse of my previous answer. Every new dillema should be different and harder from the one given to me before. 
+		If I change the topic of conversation or my response is not closely related to the context of your dilemma or I ask you something, tell me about it and give me a new dilemma immediatly without asking additional questions.  In any situation, present a new dilemma without asking if I need it.
         `
-				: `Не используй приветствия или вводные слова, чтобы начать разговор, начинай сразу с текста дилеммы. Предложи мне социально острую сложную дилемму для игры "Исследование личности через дилеммы". Если это не первая дилемма, дай мне анализ моего предыдущего ответа. Каждая новая дилемма должна быть сложнее , чем была предложена мне ранее. 
-		Если я изменю тему разговора или мой ответ не будет тесно связан с контекстом твоей дилеммы, или я задам тебе вопрос, скажи  мне об этом и дай мне новую дилемму.`;
+				: `Не используй приветствия или вводные слова, чтобы начать разговор, начинай сразу с текста дилеммы. Предложи мне социально острую сложную дилемму для игры "Исследование личности через дилеммы". Дилеммы должны быть сложными и ставить меня в реально тяжелые социальные выборы. Если это не первая дилемма, дай мне анализ моего предыдущего ответа. Каждая новая дилемма должна отличаться и  быть сложнее , чем была предложена мне ранее. 
+		Если я изменю тему разговора или мой ответ не будет  связан с контекстом твоей дилеммы, или я задам тебе вопрос, скажи  мне об этом и дай мне новую дилемму, немедленно, не задавая дополнительных вопросов. В любой ситуации задавай новую диллему не спрашивая, нужна ли она мне.`;
+
 		const unsubscribe = specialMessage.subscribe((value) => {
 			if (value) {
 				initialPrompt =
 					$locale === 'en'
-						? `Analyze our entire conversation. If my responses were brief, inform me about this and write a short psychological portrait about me based
+						? `Analyze our entire conversation. If my responses were brief, inform me about this and write a  psychological portrait about me based
 				on your questions and my answers in context.   If I provided detailed answers, write an extensive psychological portrait about me based
 				on your questions and my answers in context. If I conquered the same answer, provide short psychological portrait about me and indicate that I did not take the task seriously enough.   identify my strong character traits if I've demonstrated them, and leadership qualities if I've shown any.
 				If my responses were off-topic or I kept asking questions and straying from the topic, let me know about this and suggest me play again.
  `
-						: `Проанализируй весь наш разговор. Если мои ответы были краткими, сообщи мне об этом и напиши обширный психологический портрет обо мне, основываясь на твоих вопросах и моих ответах в контексте. Если я предоставил подробные ответы, напиши обширный психологический портрет обо мне, основываясь на твоих вопросах и моих ответах в контексте. Если я повторял один и тот же ответ, предоставь короткий психологический портрет обо мне и укажи, что я не отнесся к задаче достаточно серьезно. 
+						: `Проанализируй весь наш разговор. Если мои ответы были краткими, сообщи мне об этом и напиши  психологический портрет обо мне, основываясь на твоих вопросах и моих ответах в контексте. Если я предоставил подробные ответы, напиши обширный психологический портрет обо мне, основываясь на твоих вопросах и моих ответах в контексте. Если я повторял один и тот же ответ, предоставь короткий психологический портрет обо мне и укажи, что я не отнесся к задаче достаточно серьезно. 
  Определи мои сильные черты характера, если я их продемонстрировал, и лидерские качества, если они у меня есть. 
  Если мои ответы были не по теме или я продолжал задавать вопросы и отходить от темы, дай мне знать об этом и предложите сыграть еще раз.`;
 				newStart = true;
 			}
 		});
+
 		await sendInitialMessage(initialPrompt);
+		initialPromptSent = true;
 		unsubscribe();
 	}
 	async function sendInitialMessage(messageToSend: string) {
@@ -106,6 +125,16 @@
 		userScrolled = false;
 		isProgrammaticScroll = true;
 	};
+
+	async function handleReload() {
+		try {
+			await reload();
+			console.log('Чат обновлен');
+		} catch (error) {
+			console.error('Ошибка при перезагрузке чата:', error);
+		}
+	}
+
 	const handleButtonClick = () => {
 		specialMessage.set(true);
 	};
@@ -157,7 +186,7 @@
 		}
 	}
 
-	$: userMessages = $messages.filter((m) => m.role === 'user').length;
+	$: $userMessages = $messages.filter((m) => m.role === 'user').length;
 </script>
 
 <div
@@ -165,7 +194,7 @@
 >
 	<div
 		id={$specialMessage ? 'result-container' : 'chat-container'}
-		class=" overflow-scroll scroll-smooth p-0 h-[calc(100%-25%)] mb-12 scrollbar-hide"
+		class=" overflow-scroll scroll-smooth p-0 h-[calc(100%-22%)] mb-12 scrollbar-hide"
 	>
 		{#if !$specialMessage}
 			{#each $messages as m (m.id)}
@@ -180,6 +209,38 @@
 									: 'pb-2 pt-2'}
 						>
 							{m.content}
+							{#if m.role !== 'user' && m == $messages[$messages.length - 1] && $isLoading == false}
+								<button on:click={handleReload} class="bg-transparent pl-2 m-0">
+									<svg
+										fill="#222222"
+										height="12px"
+										width="12px"
+										version="1.1"
+										id="Capa_1"
+										xmlns="http://www.w3.org/2000/svg"
+										xmlns:xlink="http://www.w3.org/1999/xlink"
+										viewBox="0 0 489.698 489.698"
+										xml:space="preserve"
+									>
+										<g>
+											<g>
+												<path
+													d="M468.999,227.774c-11.4,0-20.8,8.3-20.8,19.8c-1,74.9-44.2,142.6-110.3,178.9c-99.6,54.7-216,5.6-260.6-61l62.9,13.1
+			c10.4,2.1,21.8-4.2,23.9-15.6c2.1-10.4-4.2-21.8-15.6-23.9l-123.7-26c-7.2-1.7-26.1,3.5-23.9,22.9l15.6,124.8
+			c1,10.4,9.4,17.7,19.8,17.7c15.5,0,21.8-11.4,20.8-22.9l-7.3-60.9c101.1,121.3,229.4,104.4,306.8,69.3
+			c80.1-42.7,131.1-124.8,132.1-215.4C488.799,237.174,480.399,227.774,468.999,227.774z"
+												/>
+												<path
+													d="M20.599,261.874c11.4,0,20.8-8.3,20.8-19.8c1-74.9,44.2-142.6,110.3-178.9c99.6-54.7,216-5.6,260.6,61l-62.9-13.1
+			c-10.4-2.1-21.8,4.2-23.9,15.6c-2.1,10.4,4.2,21.8,15.6,23.9l123.8,26c7.2,1.7,26.1-3.5,23.9-22.9l-15.6-124.8
+			c-1-10.4-9.4-17.7-19.8-17.7c-15.5,0-21.8,11.4-20.8,22.9l7.2,60.9c-101.1-121.2-229.4-104.4-306.8-69.2
+			c-80.1,42.6-131.1,124.8-132.2,215.3C0.799,252.574,9.199,261.874,20.599,261.874z"
+												/>
+											</g>
+										</g>
+									</svg>
+								</button>
+							{/if}
 						</span>
 					</div>
 				{/if}
@@ -227,7 +288,7 @@
 				</div>
 			{/if}
 		{/if}
-		{#if showButton && $isLoading == false && !newStart}
+		{#if $showButton && $isLoading == false && !newStart}
 			<div class="flex justify-start items-center text-start pl-[4.5%] sm:pl-[9%]">
 				<h5 class="text-md tracking-tight text-font sm:hidden md:hidden">
 					{$t('portrait.exploration')}
@@ -249,11 +310,11 @@
 	</div>
 
 	<form
-		class="mb-10 sm:mb-10 md:mb-10 lg:mb-[70px] fixed justify-center items-center self-center bottom-0 z-50 w-3/5 min-h-16 bg-transparent sm:w-[90%] md:w-[80%] lg:w-4/5 sm:pl-0 sm:pr-0 md:pl-0 md:pr-0"
+		class="mb-10 sm:mb-10 md:mb-10 lg:mb-[70px] fixed justify-center items-center self-center bottom-0 z-100 w-3/5 min-h-16 max-h-[30%] bg-transparent sm:w-[90%] md:w-[80%] lg:w-4/5 sm:pl-0 sm:pr-0 md:pl-0 md:pr-0"
 		on:submit={handleSubmit}
 	>
 		{#if newStart && $isLoading == false}
-			<div class="mb-[7%] sm:mb-0 flex justify-center self-center items-center w-[100%]">
+			<div class="relative mb-[7%] sm:mb-0 flex justify-center self-center items-center w-[100%]">
 				<div
 					tabindex="0"
 					role="button"

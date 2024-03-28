@@ -24,6 +24,7 @@
 	bind:this={innerRef.current}
 		class={`${baseClasses} ${sizeClasses[size]}`}
 		type="text"
+		autocomplete="off"
 		{placeholder}
 		bind:value
 		{id}

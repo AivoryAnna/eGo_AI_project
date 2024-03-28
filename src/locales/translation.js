@@ -35,6 +35,7 @@ export default {
     "user.user": "Вы",
     "user.eGo": "eGo портрет",
     "portrait.exploration": "Портрет исследования личности от eGo готов",
+    "smportrait.exploration": "Портрет личности от eGo готов",
     "get.portrait": "получить",
     "more.play": "Еще раз?",
     "start.again": "Начать заново",

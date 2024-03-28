@@ -6,6 +6,7 @@ const config = new Configuration({
 })
 const openai = new OpenAIApi(config)
 
+
 export const runtime = 'edge'
 
 export async function POST(req: Request) {
