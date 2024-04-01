@@ -1,3 +1,3 @@
 import { writable } from 'svelte/store';
 
-export const currentComponent = writable('Gameplay');
+export const currentComponent = writable('');

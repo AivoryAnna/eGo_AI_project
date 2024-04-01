@@ -13,12 +13,12 @@
         const storedComponent = localStorage.getItem('currentComponent');
         if (storedComponent) {
             currentComponent.set(storedComponent);
-        }
+        } 
     });
 
     function resetGameplay() {
         gameplayKey.update((n) => n + 1);
-		localStorage.removeItem('chatMessages'); 
+		localStorage.removeItem('chatMessages');
     }
 
 	$: showWelcome = $currentComponent === 'About';
@@ -27,22 +27,23 @@
         currentComponent.subscribe($currentComponent => {
             if (typeof window !== 'undefined') {
                 localStorage.setItem('currentComponent', $currentComponent);
-            }
+            } 
         });
     });
 </script>
 
 
 <article>
-	<div class="overflow-hidden flex flex-col h-[100dvh] bg-main h-[100dvh] min-h-[100vh] fixed min-w-[100%] bottom-0 left-0">
+	<div class="overflow-hidden flex flex-col h-[100dvh] bg-main ">
+		{#if $currentComponent === 'Gameplay' || $currentComponent === 'About'}
 		<div class="fixed w-full z-50">
-			<Header {showWelcome}  on:changeComponent={({ detail }) => currentComponent.set(detail.component)} />
+			<Header {showWelcome} />
 		</div>
+		{/if}
 		{#if showWelcome && $currentComponent === 'About'}
-			<div class="flex justify-center items-center p-0 h-[100%] z-0">
+			<div class="flex justify-center items-center p-0 h-[100dvh] ">
 				<About
 					on:continue={() => (showWelcome = false)}
-					on:changeComponent={({ detail }) => currentComponent.set(detail.component)}
 				/>
 			</div>
 		{:else if $currentComponent === 'Gameplay'}

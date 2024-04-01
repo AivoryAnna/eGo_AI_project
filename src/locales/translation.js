@@ -18,7 +18,9 @@ export default {
     "get.portrait": "get",
     "more.play": "One more time?",
     "start.again": "Get started",
-    "enter.answer": "Enter your answer..."
+    "enter.answer": "Enter your answer...",
+    "warning.user": "Any information provided on this site is for entertainment purposes only.",
+    "smwarning.user": "This site's content is purely for entertainment."
   },
   ru: {
     "homepage.title": "Открой Свою Уникальность",
@@ -39,6 +41,8 @@ export default {
     "get.portrait": "получить",
     "more.play": "Еще раз?",
     "start.again": "Начать заново",
-    "enter.answer": "Введите ответ..."
+    "enter.answer": "Введите ответ...",
+    "warning.user": "Любая информация, предоставленная на этом сайте, носит исключительно развлекательный характер.",
+    "smwarning.user": "Данные на сайте носят игровой характер."
   },
 };

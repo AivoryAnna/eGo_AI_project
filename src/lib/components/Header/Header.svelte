@@ -6,16 +6,16 @@
 
 	function handleClick() {
 		currentComponent.set('About'); 
-		showWelcome = false; 
+		showWelcome = $currentComponent === 'About'; 
 		localStorage.removeItem('chatMessages');
 	}
 </script>
 
-<header class="flex z-10 {!showWelcome
+<header class="flex z-50 {showWelcome
 	? 'text-left'
-	: 'sm:text-center lg:text-center sm:justify-center sm:items-center'} p-5  w-full">
+	: 'sm:text-center sm:justify-center sm:items-center'} items-center p-3  w-full">
 	<div class="flex row p-2">
-		<div class="flex flex-row z-50 cursor-pointer" on:click={handleClick} >
+		<div class="flex flex-row cursor-pointer" on:click={handleClick} >
 			<svg
 				width="32"
 				height="32"
@@ -52,7 +52,7 @@
 		</div>
 	</div>
 	{#if showWelcome}
-	<form class="max-w-sm mx-auto bg-main right-0 absolute mr-9 z-20 pt-3 ">
+	<form class="max-w-sm mx-auto bg-main right-0 absolute mr-9 z-20 pt-0 ">
 		<select
 			bind:value={$locale}
 			id="countries"

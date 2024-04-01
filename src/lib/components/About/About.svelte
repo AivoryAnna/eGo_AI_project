@@ -1,13 +1,15 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
 	import '../../styles/tailwind.css';
-	import { t, locale, locales } from "../../../locales/i18n";
+	import { t } from "../../../locales/i18n";
+	import { currentComponent } from '../../../stores';
 
 	const dispatch = createEventDispatcher();
 
 	function handleHostClick() {
         dispatch('continue');
-		dispatch('changeComponent', { component: 'Gameplay' });
+		currentComponent.set('Gameplay'); 
+		localStorage.removeItem('chatMessages');
     }
 
 	function handleKeyDown(event: KeyboardEvent) {
@@ -63,4 +65,13 @@
 			</div>
 		</div>
 	</div>
+
+
+<footer class="sm:mt-[calc(100%-90%)] md:mt-[calc(100%-90%)] lg:mt-[calc(100%-95%)] mt-[calc(100%-98%)]  absolute bottom-0 flex flex-col justify-center items-center text-center pr-5 pl-5 overflow-hidden w-100% ">
+    <div class="w-full mx-auto max-w-screen-xl p-4 md:flex md:items-center md:justify-between">
+      <span class="text-sm text-gray-500 sm:text-center dark:text-gray-400 sm:hidden">{$t("warning.user")}</span>
+	  <span class="text-sm text-gray-500 sm:text-center dark:text-gray-400 md:hidden lg:hidden xl:hidden">{$t("smwarning.user")}</span>
+    </div>
+</footer>
+
 </div>
