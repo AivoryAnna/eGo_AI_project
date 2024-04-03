@@ -5,9 +5,11 @@
     import Header from '$components/Header/Header.svelte';
     import { writable } from 'svelte/store';
 	import { currentComponent } from '../../../stores';
+	
 
     let showWelcome: boolean = true;
     let gameplayKey = writable(0);
+	
 
 	onMount(() => {
         const storedComponent = localStorage.getItem('currentComponent');
@@ -49,7 +51,7 @@
 		{:else if $currentComponent === 'Gameplay'}
 			{#key $gameplayKey}
 				<div class="flex justify-center h-[100dvh] ">
-					<Gameplay on:reset={resetGameplay} />
+					<Gameplay on:reset={resetGameplay}/>
 				</div>
 			{/key}
 		{/if}

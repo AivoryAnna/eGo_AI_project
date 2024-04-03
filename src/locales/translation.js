@@ -2,7 +2,7 @@ export default {
   en: {
     "homepage.title": "Discover Your Uniqueness",
     "homepage.description": "Embark on an adventure into self-discovery by diving into social games with AI.",
-    "smhomepage.description": "Embark on self-discovery with AI.",
+    "smhomepage.description": "Embark on self-discovery with AI",
     "start.game": "Start Game",
     "game.description": "I am ready to discover myself",
     "rule.first": "The more dilemmas you go through, the deeper your portrait will be.",
@@ -25,7 +25,7 @@ export default {
   ru: {
     "homepage.title": "Открой Свою Уникальность",
     "homepage.description": "Отправься в приключение по самопознанию c социальными играми от AI.",
-    "smhomepage.description": "Отправься в самопознание с AI.",
+    "smhomepage.description": "Отправься в самопознание с AI",
     "start.game": "Начать игру",
     "game.description": "Я готов к самопознанию",
     "rule.first": "Чем больше дилемм вы пройдете, тем глубже будет ваш портрет.",

@@ -1,7 +1,6 @@
 <script lang="ts">
 	import '../../styles/tailwind.css';
 	import { createEventDispatcher } from 'svelte';
-	
 
 	export let type: string = 'text';
 	export let placeholder: string | undefined = undefined;
@@ -10,6 +9,7 @@
 	export let id: string = '';
 	export let value: string = '';
 	export let group: string = '';
+	export let textSize: string = '';
 	export let innerRef: { current: null | HTMLTextAreaElement } = { current: null };
 
 	let baseClasses =
@@ -17,25 +17,27 @@
 	let sizeClasses = {
 		small: 'p-2 text-sm',
 		medium: 'p-3 text-base',
-		large: 'w-full pr-[8%] sm:pr-[15%]'
+		large: 'w-full pr-[8%] sm:pr-[20%]'
 	};
 	function autoResize(event: Event) {
 		let textarea = event.target as HTMLInputElement;
-		if (window.innerWidth < 959) {
+		if (window.innerWidth < 767) {
 			textarea.style.height = 'auto';
 			textarea.style.height = `${textarea.scrollHeight}px`;
-			textarea.style.padding = `pb-[8%] pb-[8%] pl-[2%]`
+			textSize = textarea.style.height;
+			dispatch('resize', { textSize });
+			textarea.style.padding = `pb-[8%] pb-[8%] pl-[2%]`;
 		}
 	}
 
 	const dispatch = createEventDispatcher();
 
-    function handleKeyDown(event: KeyboardEvent) {
-        if (event.key === 'Enter' && !event.shiftKey) {
-            event.preventDefault();
-            dispatch('submit');
-        }
-    }
+	function handleKeyDown(event: KeyboardEvent) {
+		if (event.key === 'Enter' && !event.shiftKey) {
+			event.preventDefault();
+			dispatch('submit');
+		}
+	}
 </script>
 
 {#if type === 'text'}
