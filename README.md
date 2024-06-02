@@ -1,38 +1,28 @@
-# create-svelte
+# eGo 
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/main/packages/create-svelte).
+A web app that analyzes your answers to thought-provoking dilemmas.
 
-## Creating a project
+## Live Version
 
-If you're seeing this, you've probably already done this step. Congrats!
+To start using eGo, visit our website [eGo](https://e-go-ai-project.vercel.app) and go through the interactive dilemma process. At the end, you will be offered a detailed report on your personality, based on your responses.›
 
-```bash
-# create a new project in the current directory
-npm create svelte@latest
+## Key Features
 
-# create a new project in my-app
-npm create svelte@latest my-app
-```
+- Interactive Dilemmas: Users face a series of ethical and moral dilemmas, each requiring a thoughtful choice.
+- Response Analysis: Integration with the AI analysis the user's responses and generates a detailed personality profile.
+- User Interface: A modern and clean interface design that ensures ease and convenience of use.
+- Personality Report: At the end of the dilemmas, users receive a detailed report on their personality traits and decision-making tendencies.
 
-## Developing
+## Technologies
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+- Frontend: SvelteKit, TailwindCSS for styling, TypeScript.
+- Backend: Integration with OpenAI for processing and analysing responses. TypeScript.
+- Deployment: Deployment and hosting on Vercel to ensure smooth application operation.
 
-```bash
-npm run dev
+## Contacts
 
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
+For inquiries, visit my [LinkedIn](linkedin.com/in/anastasiia-mustakova-a8955b254).
 
-## Building
+## License
 
-To create a production version of your app:
-
-```bash
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+This project is licensed under the MIT License. Copyright (c) Anastasia Mustakova.
